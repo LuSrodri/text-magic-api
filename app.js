@@ -2,8 +2,13 @@ var express = require('express');
 var app = express();
 const { v4: uuidv4 } = require('uuid');
 require('dotenv').config();
+const cors = require('cors');
 const PORT = process.env.PORT || 3000;
 app.use(express.json());
+app.disable('x-powered-by');
+app.use(cors({
+    origin: '*'
+}));
 
 const { Configuration, OpenAIApi } = require("openai");
 const configuration = new Configuration({
