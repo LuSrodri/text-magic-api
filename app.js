@@ -1,5 +1,6 @@
 var express = require('express');
 var app = express();
+const { v4: uuidv4 } = require('uuid');
 require('dotenv').config();
 const PORT = process.env.PORT || 3000;
 app.use(express.json());
@@ -36,6 +37,7 @@ app.post('/text-to-emoji', async (req, res) => {
             top_p: 1,
             frequency_penalty: 0,
             presence_penalty: 0,
+            user: uuidv4(),
         });
 
         res.statusCode = 200;
@@ -73,6 +75,7 @@ app.post('/explain-code', async (req, res) => {
             top_p: 1,
             frequency_penalty: 0,
             presence_penalty: 0,
+            user: uuidv4(),
         });
 
         res.statusCode = 200;
@@ -110,6 +113,7 @@ app.post('/fixes-code', async (req, res) => {
             top_p: 1,
             frequency_penalty: 0,
             presence_penalty: 0,
+            user: uuidv4(),
         });
 
         res.statusCode = 200;
@@ -147,6 +151,7 @@ app.post('/fixes-text', async (req, res) => {
             top_p: 1,
             frequency_penalty: 0,
             presence_penalty: 0,
+            user: uuidv4(),
         });
 
         res.statusCode = 200;
