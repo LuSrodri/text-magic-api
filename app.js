@@ -19,7 +19,7 @@ const openai = new OpenAIApi(configuration);
 app.post('/text-to-emoji', async (req, res) => {
     let input;
 
-    if(!verifyIfHasInputBody(req)) {
+    if (!verifyIfHasInputBody(req)) {
         res.sendStatus(400);
         return;
     }
@@ -57,7 +57,7 @@ app.post('/text-to-emoji', async (req, res) => {
 app.post('/explain-code', async (req, res) => {
     let input;
 
-    if(!verifyIfHasInputBody(req)) {
+    if (!verifyIfHasInputBody(req)) {
         res.sendStatus(400);
         return;
     }
@@ -95,7 +95,7 @@ app.post('/explain-code', async (req, res) => {
 app.post('/fixes-code', async (req, res) => {
     let input;
 
-    if(!verifyIfHasInputBody(req)) {
+    if (!verifyIfHasInputBody(req)) {
         res.sendStatus(400);
         return;
     }
@@ -111,11 +111,11 @@ app.post('/fixes-code', async (req, res) => {
 
     try {
         const response = await openai.createCompletion({
-            model: "code-davinci-002",
-            prompt: ("Rewrite the code below fixing the possible mistakes:\n" + input),
-            temperature: 0.1,
-            max_tokens: 64,
-            top_p: 1,
+            model: "text-davinci-003",
+            prompt: ("Rewrite the code below in the better way:\n\n" + input.trim()),
+            temperature: 0,
+            max_tokens: 350,
+            top_p: 0,
             frequency_penalty: 0,
             presence_penalty: 0,
             user: uuidv4(),
@@ -133,7 +133,7 @@ app.post('/fixes-code', async (req, res) => {
 app.post('/fixes-text', async (req, res) => {
     let input;
 
-    if(!verifyIfHasInputBody(req)) {
+    if (!verifyIfHasInputBody(req)) {
         res.sendStatus(400);
         return;
     }
@@ -184,5 +184,5 @@ function verifyIfHasInputBody(req) {
 
 
 app.listen(PORT, () => {
-    console.log('App listening on port 3000!');
+    console.log(`App listening on port ${PORT}!`);
 });
