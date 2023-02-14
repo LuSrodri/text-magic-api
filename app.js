@@ -73,15 +73,15 @@ app.post('/explain-code', async (req, res) => {
 
     try {
         const response = await openai.createCompletion({
-            model: "code-davinci-002",
-            prompt: ("Explain the code below:\n" + input),
-            temperature: 0.1,
-            max_tokens: 64,
+            model: "text-davinci-003",
+            prompt: ("Explain the code below:\n\n" + input.trim()),
+            temperature: 0,
+            max_tokens: 350,
             top_p: 1,
             frequency_penalty: 0,
             presence_penalty: 0,
             user: uuidv4(),
-        });
+          });
 
         res.statusCode = 200;
         res.send({ output: response.data.choices[0].text });
