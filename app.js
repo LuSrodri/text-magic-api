@@ -36,7 +36,7 @@ app.post('/text-to-emoji', async (req, res) => {
     try {
         const response = await openai.createCompletion({
             model: "text-davinci-003",
-            prompt: ("Write \"" + input + "\" in emoji"),
+            prompt: ("Write the text below in emoji. \n\n Text: \"\"\" \n" + input + "\n\"\"\""),
             temperature: 0.1,
             max_tokens: 64,
             top_p: 1,
@@ -74,7 +74,7 @@ app.post('/explain-code', async (req, res) => {
     try {
         const response = await openai.createCompletion({
             model: "text-davinci-003",
-            prompt: ("Explain the code below:\n\n" + input.trim()),
+            prompt: ("Explain the code below: \n\n Code: \"\"\" \n" + input.trim() + "\n\"\"\""),
             temperature: 0,
             max_tokens: 350,
             top_p: 1,
@@ -112,7 +112,7 @@ app.post('/fixes-code', async (req, res) => {
     try {
         const response = await openai.createCompletion({
             model: "text-davinci-003",
-            prompt: ("Rewrite the code below in the better way:\n\n" + input.trim()),
+            prompt: ("Rewrite the code below in the better way: \n\n Code: \"\"\" \n" + input.trim() + "\n\"\"\""),
             temperature: 0,
             max_tokens: 350,
             top_p: 0,
@@ -150,7 +150,7 @@ app.post('/fixes-text', async (req, res) => {
     try {
         const response = await openai.createCompletion({
             model: "text-davinci-003",
-            prompt: ("Rewrite the text below fixing the possible mistakes:\n" + input),
+            prompt: ("Rewrite the text below fixing the possible mistakes: \n\n Text: \"\"\" \n" + input + "\n\"\"\""),
             temperature: 0.1,
             max_tokens: 64,
             top_p: 1,
