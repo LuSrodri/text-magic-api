@@ -241,6 +241,44 @@ app.post('/math-pt', async (req, res) => {
     }
 });
 
+app.post('/translate-code', async (req, res) => {
+    let input;
+
+    if (!verifyIfHasInputBody(req) || !verifyIfHasCodeBody(req)) {
+        res.sendStatus(400);
+        return;
+    }
+
+    input = req.body.input;
+    code = req.body.code;
+
+    const isProfane = await openai.createModeration({ input: input });
+    const isProfane2 = await openai.createModeration({ input: code });
+
+    if (isProfane.data.results[0].flagged && isProfane2.data.results[0].flagged) {
+        res.sendStatus(400);
+        return;
+    }
+ 
+    try {
+        const response = await openai.createChatCompletion({
+            model: "gpt-4",
+            messages: [
+             {"role": "user", "content": ("Translate the code below to " + code + " code: \n\n Code: \"\"\" \n" + input + "\n\"\"\"")},   
+            ],
+            frequency_penalty: 0,
+            presence_penalty: 0,
+            user: uuidv4(),
+        });
+
+        res.statusCode = 200;
+        res.send({ output: response.data.choices[0].message.content });
+    }
+    catch (e) {
+        console.log(e.error);
+        res.sendStatus(400);
+    }
+});
 
 app.post('/html-to-markdown', async (req, res) => {
     let input;
@@ -397,6 +435,20 @@ app.post('/python-to-js', async (req, res) => {
 function verifyIfHasInputBody(req) {
     if (req.body) {
         if (req.body.input) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    else {
+        return false;
+    }
+}
+
+function verifyIfHasCodeBody(req) {
+    if (req.body) {
+        if (req.body.code) {
             return true;
         }
         else {
