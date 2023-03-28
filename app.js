@@ -51,7 +51,7 @@ app.post('/text-to-emoji', async (req, res) => {
         res.send({ output: response.data.choices[0].message.content });
     }
     catch (e) {
-        console.log(e.error);
+        console.log(e);
         res.sendStatus(400);
     }
 });
@@ -88,7 +88,7 @@ app.post('/explain-code', async (req, res) => {
         res.send({ output: response.data.choices[0].message.content });
     }
     catch (e) {
-        console.log(e.error);
+        console.log(e);
         res.sendStatus(400);
     }
 });
@@ -125,7 +125,7 @@ app.post('/fixes-code', async (req, res) => {
         res.send({ output: response.data.choices[0].message.content });
     }
     catch (e) {
-        console.log(e.error);
+        console.log(e);
         res.sendStatus(400);
     }
 });
@@ -162,7 +162,7 @@ app.post('/fixes-text', async (req, res) => {
         res.send({ output: response.data.choices[0].message.content });
     }
     catch (e) {
-        console.log(e.error);
+        console.log(e);
         res.sendStatus(400);
     }
 });
@@ -199,7 +199,7 @@ app.post('/math', async (req, res) => {
         res.send({ output: response.data.choices[0].message.content });
     }
     catch (e) {
-        console.log(e.error);
+        console.log(e);
         res.sendStatus(400);
     }
 });
@@ -236,7 +236,7 @@ app.post('/math-pt', async (req, res) => {
         res.send({ output: response.data.choices[0].message.content });
     }
     catch (e) {
-        console.log(e.error);
+        console.log(e);
         res.sendStatus(400);
     }
 });
@@ -255,7 +255,7 @@ app.post('/translate-code', async (req, res) => {
     const isProfane = await openai.createModeration({ input: input });
     const isProfane2 = await openai.createModeration({ input: code });
 
-    if (isProfane.data.results[0].flagged && isProfane2.data.results[0].flagged) {
+    if (isProfane.data.results[0].flagged || isProfane2.data.results[0].flagged) {
         res.sendStatus(400);
         return;
     }
@@ -275,7 +275,44 @@ app.post('/translate-code', async (req, res) => {
         res.send({ output: response.data.choices[0].message.content });
     }
     catch (e) {
-        console.log(e.error);
+        console.log(e);
+        res.sendStatus(400);
+    }
+});
+
+app.post('/chat', async (req, res) => {
+    let input;
+
+    if (!verifyIfHasInputBody(req)) {
+        res.sendStatus(400);
+        return;
+    }
+
+    input = req.body.input;
+
+    const isProfane = await openai.createModeration({ input: input });
+
+    if (isProfane.data.results[0].flagged) {
+        res.sendStatus(400);
+        return;
+    }
+ 
+    try {
+        const response = await openai.createChatCompletion({
+            model: "gpt-4",
+            messages: [
+             {"role": "user", "content": input},   
+            ],
+            frequency_penalty: 0,
+            presence_penalty: 0,
+            user: uuidv4(),
+        });
+
+        res.statusCode = 200;
+        res.send({ output: response.data.choices[0].message.content });
+    }
+    catch (e) {
+        console.log(e);
         res.sendStatus(400);
     }
 });
