@@ -167,6 +167,81 @@ app.post('/fixes-text', async (req, res) => {
     }
 });
 
+app.post('/math', async (req, res) => {
+    let input;
+
+    if (!verifyIfHasInputBody(req)) {
+        res.sendStatus(400);
+        return;
+    }
+
+    input = req.body.input;
+
+    const isProfane = await openai.createModeration({ input: input });
+
+    if (isProfane.data.results[0].flagged) {
+        res.sendStatus(400);
+        return;
+    }
+ 
+    try {
+        const response = await openai.createChatCompletion({
+            model: "gpt-4",
+            messages: [
+             {"role": "user", "content": ("Solve this math problem in step-by-step: \n\n Math problem: \"\"\" \n" + input + "\n\"\"\"")},   
+            ],
+            frequency_penalty: 0,
+            presence_penalty: 0,
+            user: uuidv4(),
+        });
+
+        res.statusCode = 200;
+        res.send({ output: response.data.choices[0].message.content });
+    }
+    catch (e) {
+        console.log(e.error);
+        res.sendStatus(400);
+    }
+});
+
+app.post('/math-pt', async (req, res) => {
+    let input;
+
+    if (!verifyIfHasInputBody(req)) {
+        res.sendStatus(400);
+        return;
+    }
+
+    input = req.body.input;
+
+    const isProfane = await openai.createModeration({ input: input });
+
+    if (isProfane.data.results[0].flagged) {
+        res.sendStatus(400);
+        return;
+    }
+ 
+    try {
+        const response = await openai.createChatCompletion({
+            model: "gpt-4",
+            messages: [
+             {"role": "user", "content": ("Resolva esse problema de matemática: \n\n Problema de matemática: \"\"\" \n" + input + "\n\"\"\"")},   
+            ],
+            frequency_penalty: 0,
+            presence_penalty: 0,
+            user: uuidv4(),
+        });
+
+        res.statusCode = 200;
+        res.send({ output: response.data.choices[0].message.content });
+    }
+    catch (e) {
+        console.log(e.error);
+        res.sendStatus(400);
+    }
+});
+
+
 app.post('/html-to-markdown', async (req, res) => {
     let input;
 
