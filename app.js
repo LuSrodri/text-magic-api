@@ -112,26 +112,28 @@ app.post('/fixes-code', async (req, res) => {
         res.sendStatus(400);
         return;
     }
-
+    
     try {
-        const response = await openai.createCompletion({
-            model: "text-davinci-003",
-            prompt: ("Rewrite the code below in the better way: \n\n Code: \"\"\" \n" + input.trim() + "\n\"\"\""),
-            temperature: 0,
-            max_tokens: 350,
-            top_p: 0,
+        const response = await openai.createChatCompletion({
+            model: "gpt-4",
+            messages: [
+             {"role": "user", "content": ("Refactor the code below in the better way: \n\n Code: \"\"\" \n" + input.trim() + "\n\"\"\"\n The response must be in HTML format")},   
+            ],
+            temperature: 0.1,
+            max_tokens: 64,
+            top_p: 1,
             frequency_penalty: 0,
             presence_penalty: 0,
             user: uuidv4(),
         });
 
         res.statusCode = 200;
-        res.send({ output: response.data.choices[0].text });
+        res.send({ output: response.data.choices[0].message.content });
     }
-    catch {
+    catch (e) {
+        console.log(e.error);
         res.sendStatus(400);
     }
-
 });
 
 app.post('/fixes-text', async (req, res) => {
