@@ -34,9 +34,11 @@ app.post('/text-to-emoji', async (req, res) => {
     }
 
     try {
-        const response = await openai.createCompletion({
-            model: "text-davinci-003",
-            prompt: ("Write the text below in emoji. \n\n Text: \"\"\" \n" + input + "\n\"\"\""),
+        const response = await openai.createChatCompletion({
+            model: "gpt-4",
+            messages: [
+             {"role": "user", "content": ("Write the text below in emoji. \n\n Text: \"\"\" \n" + input + "\n\"\"\"")},   
+            ],
             temperature: 0.1,
             max_tokens: 64,
             top_p: 1,
@@ -46,9 +48,10 @@ app.post('/text-to-emoji', async (req, res) => {
         });
 
         res.statusCode = 200;
-        res.send({ output: response.data.choices[0].text });
+        res.send({ output: response.data.choices[0].message.content });
     }
-    catch {
+    catch (e) {
+        console.log(e.error);
         res.sendStatus(400);
     }
 
