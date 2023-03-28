@@ -77,11 +77,8 @@ app.post('/explain-code', async (req, res) => {
         const response = await openai.createChatCompletion({
             model: "gpt-4",
             messages: [
-             {"role": "user", "content": ("Explain the code below: \n\n Code: \"\"\" \n" + input.trim() + "\n\"\"\"")},   
+             {"role": "user", "content": ("Explain the code below: \n\n Code: \"\"\" \n" + input.trim() + "\n\"\"\"\n The response must be in HTML format")},   
             ],
-            temperature: 0.1,
-            max_tokens: 64,
-            top_p: 1,
             frequency_penalty: 0,
             presence_penalty: 0,
             user: uuidv4(),
@@ -119,9 +116,6 @@ app.post('/fixes-code', async (req, res) => {
             messages: [
              {"role": "user", "content": ("Refactor the code below in the better way: \n\n Code: \"\"\" \n" + input.trim() + "\n\"\"\"\n The response must be in HTML format")},   
             ],
-            temperature: 0.1,
-            max_tokens: 64,
-            top_p: 1,
             frequency_penalty: 0,
             presence_penalty: 0,
             user: uuidv4(),
