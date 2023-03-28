@@ -54,7 +54,6 @@ app.post('/text-to-emoji', async (req, res) => {
         console.log(e.error);
         res.sendStatus(400);
     }
-
 });
 
 app.post('/explain-code', async (req, res) => {
@@ -75,11 +74,13 @@ app.post('/explain-code', async (req, res) => {
     }
 
     try {
-        const response = await openai.createCompletion({
-            model: "text-davinci-003",
-            prompt: ("Explain the code below: \n\n Code: \"\"\" \n" + input.trim() + "\n\"\"\""),
-            temperature: 0,
-            max_tokens: 350,
+        const response = await openai.createChatCompletion({
+            model: "gpt-4",
+            messages: [
+             {"role": "user", "content": ("Explain the code below: \n\n Code: \"\"\" \n" + input.trim() + "\n\"\"\"")},   
+            ],
+            temperature: 0.1,
+            max_tokens: 64,
             top_p: 1,
             frequency_penalty: 0,
             presence_penalty: 0,
@@ -87,12 +88,12 @@ app.post('/explain-code', async (req, res) => {
         });
 
         res.statusCode = 200;
-        res.send({ output: response.data.choices[0].text });
+        res.send({ output: response.data.choices[0].message.content });
     }
-    catch {
+    catch (e) {
+        console.log(e.error);
         res.sendStatus(400);
     }
-
 });
 
 app.post('/fixes-code', async (req, res) => {
