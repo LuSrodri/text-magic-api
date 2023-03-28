@@ -146,26 +146,25 @@ app.post('/fixes-text', async (req, res) => {
         res.sendStatus(400);
         return;
     }
-
+ 
     try {
-        const response = await openai.createCompletion({
-            model: "text-davinci-003",
-            prompt: ("Rewrite the text below fixing the possible mistakes: \n\n Text: \"\"\" \n" + input + "\n\"\"\""),
-            temperature: 0.1,
-            max_tokens: 64,
-            top_p: 1,
+        const response = await openai.createChatCompletion({
+            model: "gpt-4",
+            messages: [
+             {"role": "user", "content": ("Rewrite the text below fixing the possible mistakes: \n\n Text: \"\"\" \n" + input + "\n\"\"\"\n The response must be in HTML format")},   
+            ],
             frequency_penalty: 0,
             presence_penalty: 0,
             user: uuidv4(),
         });
 
         res.statusCode = 200;
-        res.send({ output: response.data.choices[0].text });
+        res.send({ output: response.data.choices[0].message.content });
     }
-    catch {
+    catch (e) {
+        console.log(e.error);
         res.sendStatus(400);
     }
-
 });
 
 app.post('/html-to-markdown', async (req, res) => {
