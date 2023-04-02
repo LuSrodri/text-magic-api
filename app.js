@@ -301,7 +301,7 @@ app.post('/chat', async (req, res) => {
         const response = await openai.createChatCompletion({
             model: "gpt-4",
             messages: [
-             {"role": "user", "content": input},   
+             {"role": "user", "content": ("Input: \"\"\"\n" + input + "\n\"\"\"\nOutput in HTML:\n")},   
             ],
             frequency_penalty: 0,
             presence_penalty: 0,
