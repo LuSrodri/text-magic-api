@@ -17,30 +17,19 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 app.post('/text-to-emoji', async (req, res) => {
-    let input;
-
-    if (!verifyIfHasInputBody(req)) {
-        res.sendStatus(400);
-        return;
-    }
-
-    input = req.body.input;
-
-    const isProfane = await openai.createModeration({ input: input });
-
-    if (isProfane.data.results[0].flagged) {
-        res.sendStatus(400);
-        return;
-    }
-
     try {
+        let input = req.body.input;
+
+        if ((await openai.createModeration({ input: input })).data.results[0].flagged) {
+            throw new Error("Profene input.");
+        }
+
         const response = await openai.createChatCompletion({
-            model: "gpt-4",
+            model: "gpt-3.5-turbo",
             messages: [
-             {"role": "user", "content": ("Write the text below in emoji. \n\n Text: \"\"\" \n" + input + "\n\"\"\"")},   
+                { "role": "user", "content": ("Write the text below in emoji. \n\n Text: \"\"\" \n" + input + "\n\"\"\"") },
             ],
             temperature: 0.1,
-            max_tokens: 64,
             top_p: 1,
             frequency_penalty: 0,
             presence_penalty: 0,
@@ -52,451 +41,78 @@ app.post('/text-to-emoji', async (req, res) => {
     }
     catch (e) {
         console.log(e);
-        res.sendStatus(400);
-    }
-});
-
-app.post('/explain-code', async (req, res) => {
-    let input;
-
-    if (!verifyIfHasInputBody(req)) {
-        res.sendStatus(400);
-        return;
-    }
-
-    input = req.body.input;
-
-    const isProfane = await openai.createModeration({ input: input });
-
-    if (isProfane.data.results[0].flagged) {
-        res.sendStatus(400);
-        return;
-    }
-
-    try {
-        const response = await openai.createChatCompletion({
-            model: "gpt-4",
-            messages: [
-             {"role": "user", "content": ("Explain the code below: \n\n Code: \"\"\" \n" + input.trim() + "\n\"\"\"\n The response must be in HTML format")},   
-            ],
-            frequency_penalty: 0,
-            presence_penalty: 0,
-            user: uuidv4(),
-        });
-
-        res.statusCode = 200;
-        res.send({ output: response.data.choices[0].message.content });
-    }
-    catch (e) {
-        console.log(e);
-        res.sendStatus(400);
-    }
-});
-
-app.post('/fixes-code', async (req, res) => {
-    let input;
-
-    if (!verifyIfHasInputBody(req)) {
-        res.sendStatus(400);
-        return;
-    }
-
-    input = req.body.input;
-
-    const isProfane = await openai.createModeration({ input: input });
-
-    if (isProfane.data.results[0].flagged) {
-        res.sendStatus(400);
-        return;
-    }
-    
-    try {
-        const response = await openai.createChatCompletion({
-            model: "gpt-4",
-            messages: [
-             {"role": "user", "content": ("Refactor the code below in the better way: \n\n Code: \"\"\" \n" + input.trim() + "\n\"\"\"\n The response must be in HTML format")},   
-            ],
-            frequency_penalty: 0,
-            presence_penalty: 0,
-            user: uuidv4(),
-        });
-
-        res.statusCode = 200;
-        res.send({ output: response.data.choices[0].message.content });
-    }
-    catch (e) {
-        console.log(e);
-        res.sendStatus(400);
-    }
-});
-
-app.post('/fixes-text', async (req, res) => {
-    let input;
-
-    if (!verifyIfHasInputBody(req)) {
-        res.sendStatus(400);
-        return;
-    }
-
-    input = req.body.input;
-
-    const isProfane = await openai.createModeration({ input: input });
-
-    if (isProfane.data.results[0].flagged) {
-        res.sendStatus(400);
-        return;
-    }
- 
-    try {
-        const response = await openai.createChatCompletion({
-            model: "gpt-4",
-            messages: [
-             {"role": "user", "content": ("Rewrite the text below fixing the possible mistakes: \n\n Text: \"\"\" \n" + input + "\n\"\"\"\n The response must be in HTML format")},   
-            ],
-            frequency_penalty: 0,
-            presence_penalty: 0,
-            user: uuidv4(),
-        });
-
-        res.statusCode = 200;
-        res.send({ output: response.data.choices[0].message.content });
-    }
-    catch (e) {
-        console.log(e);
-        res.sendStatus(400);
-    }
-});
-
-app.post('/math', async (req, res) => {
-    let input;
-
-    if (!verifyIfHasInputBody(req)) {
-        res.sendStatus(400);
-        return;
-    }
-
-    input = req.body.input;
-
-    const isProfane = await openai.createModeration({ input: input });
-
-    if (isProfane.data.results[0].flagged) {
-        res.sendStatus(400);
-        return;
-    }
- 
-    try {
-        const response = await openai.createChatCompletion({
-            model: "gpt-4",
-            messages: [
-             {"role": "user", "content": ("Solve this math problem in step-by-step: \n\n Math problem: \"\"\" \n" + input + "\n\"\"\"")},   
-            ],
-            frequency_penalty: 0,
-            presence_penalty: 0,
-            user: uuidv4(),
-        });
-
-        res.statusCode = 200;
-        res.send({ output: response.data.choices[0].message.content });
-    }
-    catch (e) {
-        console.log(e);
-        res.sendStatus(400);
-    }
-});
-
-app.post('/math-pt', async (req, res) => {
-    let input;
-
-    if (!verifyIfHasInputBody(req)) {
-        res.sendStatus(400);
-        return;
-    }
-
-    input = req.body.input;
-
-    const isProfane = await openai.createModeration({ input: input });
-
-    if (isProfane.data.results[0].flagged) {
-        res.sendStatus(400);
-        return;
-    }
- 
-    try {
-        const response = await openai.createChatCompletion({
-            model: "gpt-4",
-            messages: [
-             {"role": "user", "content": ("Resolva esse problema de matemática: \n\n Problema de matemática: \"\"\" \n" + input + "\n\"\"\"")},   
-            ],
-            frequency_penalty: 0,
-            presence_penalty: 0,
-            user: uuidv4(),
-        });
-
-        res.statusCode = 200;
-        res.send({ output: response.data.choices[0].message.content });
-    }
-    catch (e) {
-        console.log(e);
-        res.sendStatus(400);
-    }
-});
-
-app.post('/translate-code', async (req, res) => {
-    let input;
-
-    if (!verifyIfHasInputBody(req) || !verifyIfHasCodeBody(req)) {
-        res.sendStatus(400);
-        return;
-    }
-
-    input = req.body.input;
-    code = req.body.code;
-
-    const isProfane = await openai.createModeration({ input: input });
-    const isProfane2 = await openai.createModeration({ input: code });
-
-    if (isProfane.data.results[0].flagged || isProfane2.data.results[0].flagged) {
-        res.sendStatus(400);
-        return;
-    }
- 
-    try {
-        const response = await openai.createChatCompletion({
-            model: "gpt-4",
-            messages: [
-             {"role": "user", "content": ("Translate the code below to " + code + " code: \n\n Code: \"\"\" \n" + input + "\n\"\"\"")},   
-            ],
-            frequency_penalty: 0,
-            presence_penalty: 0,
-            user: uuidv4(),
-        });
-
-        res.statusCode = 200;
-        res.send({ output: response.data.choices[0].message.content });
-    }
-    catch (e) {
-        console.log(e);
-        res.sendStatus(400);
+        res.status(400).send({ error: "Some problem with the input. Try again with another input." });
     }
 });
 
 app.post('/chat', async (req, res) => {
-    let input;
-
-    if (!verifyIfHasInputBody(req)) {
-        res.sendStatus(400);
-        return;
-    }
-
-    input = req.body.input;
-
-    const isProfane = await openai.createModeration({ input: input });
-
-    if (isProfane.data.results[0].flagged) {
-        res.sendStatus(400);
-        return;
-    }
- 
     try {
+        let conversation = req.body.conversation;
+
+        if ((await openai.createModeration({ input: conversation.map(x => x.content) })).data.results[0].flagged) {
+            throw new Error("Profene input.");
+        }
+
+        let chatConversation = [{
+            role: "system",
+            content: `You are a assistent that helps with anything.`
+        }
+        ].concat(conversation);
+
         const response = await openai.createChatCompletion({
-            model: "gpt-4",
-            messages: [
-             {"role": "user", "content": (input)},   
-            ],
-            frequency_penalty: 0,
-            presence_penalty: 0,
+            model: "gpt-3.5-turbo-16k",
+            messages: chatConversation,
             user: uuidv4(),
         });
 
         res.statusCode = 200;
-        res.send({ output: response.data.choices[0].message.content });
+        res.send({ output: response.data.choices[0].message });
     }
     catch (e) {
         console.log(e);
-        res.sendStatus(400);
+        res.status(400).send({ error: "Some problem with the input. Try again with another input." });
     }
 });
 
-app.post('/html-to-markdown', async (req, res) => {
-    let input;
-
-    if (!verifyIfHasInputBody(req)) {
-        res.sendStatus(400);
-        return;
-    }
-
-    input = req.body.input;
-
-    const isProfane = await openai.createModeration({ input: input });
-
-    if (isProfane.data.results[0].flagged) {
-        res.sendStatus(400);
-        return;
-    }
-
+app.post('/code', async (req, res) => {
     try {
-        const response = await openai.createCompletion({
-            model: "text-davinci-003",
-            prompt: ("Rewrite the html code below in markdown style: \n\n Code: \"\"\" \n" + input + "\n\"\"\""),
-            temperature: 0.1,
-            max_tokens: 64,
-            top_p: 1,
-            frequency_penalty: 0,
-            presence_penalty: 0,
+        let request = req.body.request;
+
+        if ((await openai.createModeration({ input: Object.values(request).map(x => x.content) })).data.results[0].flagged) {
+            throw new Error("Profene input.");
+        }
+
+        let chatConversation = [{
+            role: "system",
+            content: `You are an assistent that helps with coding.`,
+        },
+        {
+            role: "user",
+            content: `The request is: \n\n \"\"\" \n${request.request.content}\n\"\"\"`,
+        },
+        {
+            role: "user",
+            content: `The code is: \n\n \"\"\" \n${request.code.content}\n\"\"\"`,
+        },
+        {
+            role: "user",
+            content: `The language is: \n\n \"\"\" \n${request.language.content}\n\"\"\"`,
+        }];
+
+        const response = await openai.createChatCompletion({
+            model: "gpt-3.5-turbo-16k",
+            messages: chatConversation,
             user: uuidv4(),
         });
 
         res.statusCode = 200;
-        res.send({ output: response.data.choices[0].text });
+        res.send({ output: response.data.choices[0].message });
     }
-    catch {
-        res.sendStatus(400);
+    catch (e) {
+        console.log(e);
+        res.status(400).send({ error: "Some problem with the input. Try again with another input." });
     }
-
 });
-
-app.post('/markdown-to-html', async (req, res) => {
-    let input;
-
-    if (!verifyIfHasInputBody(req)) {
-        res.sendStatus(400);
-        return;
-    }
-
-    input = req.body.input;
-
-    const isProfane = await openai.createModeration({ input: input });
-
-    if (isProfane.data.results[0].flagged) {
-        res.sendStatus(400);
-        return;
-    }
-
-    try {
-        const response = await openai.createCompletion({
-            model: "text-davinci-003",
-            prompt: ("Rewrite the markdown code below in html: \n\n Code: \"\"\" \n" + input + "\n\"\"\""),
-            temperature: 0.1,
-            max_tokens: 64,
-            top_p: 1,
-            frequency_penalty: 0,
-            presence_penalty: 0,
-            user: uuidv4(),
-        });
-
-        res.statusCode = 200;
-        res.send({ output: response.data.choices[0].text });
-    }
-    catch {
-        res.sendStatus(400);
-    }
-
-});
-
-app.post('/js-to-python', async (req, res) => {
-    let input;
-
-    if (!verifyIfHasInputBody(req)) {
-        res.sendStatus(400);
-        return;
-    }
-
-    input = req.body.input;
-
-    const isProfane = await openai.createModeration({ input: input });
-
-    if (isProfane.data.results[0].flagged) {
-        res.sendStatus(400);
-        return;
-    }
-
-    try {
-        const response = await openai.createCompletion({
-            model: "text-davinci-003",
-            prompt: ("Rewrite the javascript code below in useful python code: \n\n Code: \"\"\" \n" + input + "\n\"\"\""),
-            temperature: 0.1,
-            max_tokens: 64,
-            top_p: 1,
-            frequency_penalty: 0,
-            presence_penalty: 0,
-            user: uuidv4(),
-        });
-
-        res.statusCode = 200;
-        res.send({ output: response.data.choices[0].text });
-    }
-    catch {
-        res.sendStatus(400);
-    }
-
-});
-
-app.post('/python-to-js', async (req, res) => {
-    let input;
-
-    if (!verifyIfHasInputBody(req)) {
-        res.sendStatus(400);
-        return;
-    }
-
-    input = req.body.input;
-
-    const isProfane = await openai.createModeration({ input: input });
-
-    if (isProfane.data.results[0].flagged) {
-        res.sendStatus(400);
-        return;
-    }
-
-    try {
-        const response = await openai.createCompletion({
-            model: "text-davinci-003",
-            prompt: ("Rewrite the python code below in useful javascript code: \n\n Code: \"\"\" \n" + input + "\n\"\"\""),
-            temperature: 0.1,
-            max_tokens: 64,
-            top_p: 1,
-            frequency_penalty: 0,
-            presence_penalty: 0,
-            user: uuidv4(),
-        });
-
-        res.statusCode = 200;
-        res.send({ output: response.data.choices[0].text });
-    }
-    catch {
-        res.sendStatus(400);
-    }
-
-});
-
-function verifyIfHasInputBody(req) {
-    if (req.body) {
-        if (req.body.input) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-    else {
-        return false;
-    }
-}
-
-function verifyIfHasCodeBody(req) {
-    if (req.body) {
-        if (req.body.code) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-    else {
-        return false;
-    }
-}
-
 
 app.listen(PORT, () => {
     console.log(`App listening on port ${PORT}!`);
