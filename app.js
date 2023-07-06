@@ -17,6 +17,11 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 app.post('/text-to-emoji', async (req, res) => {
+    if (req.headers['x-rapidapi-proxy-secret'] !== process.env.X_RAPIDAPI_PROXY_SECRET) {
+        res.sendStatus(401);
+        return;
+    }
+
     try {
         let input = req.body.input;
 
@@ -46,6 +51,11 @@ app.post('/text-to-emoji', async (req, res) => {
 });
 
 app.post('/chat', async (req, res) => {
+    if (req.headers['x-rapidapi-proxy-secret'] !== process.env.X_RAPIDAPI_PROXY_SECRET) {
+        res.sendStatus(401);
+        return;
+    }
+
     try {
         let conversation = req.body.conversation;
 
@@ -75,6 +85,11 @@ app.post('/chat', async (req, res) => {
 });
 
 app.post('/code', async (req, res) => {
+    if (req.headers['x-rapidapi-proxy-secret'] !== process.env.X_RAPIDAPI_PROXY_SECRET) {
+        res.sendStatus(401);
+        return;
+    }
+    
     try {
         let request = req.body.request;
 
