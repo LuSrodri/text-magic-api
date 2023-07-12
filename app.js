@@ -144,7 +144,7 @@ app.post('/translator', async (req, res) => {
 
         let chatConversation = [{
             role: "system",
-            content: `You are a translator that helps with translates.`,
+            content: `You are a translator that helps with translates. You can translate from any language to target language. You can translate a word, a phrase or a text. The response will be ONLY the text/phrase/word translated in target language.`,
         },
         {
             role: "user",
@@ -152,7 +152,7 @@ app.post('/translator', async (req, res) => {
         },
         {
             role: "user",
-            content: `The text to translate is: \n\n \"\"\" \n${request.text.content}\n\"\"\"`,
+            content: `The text/phrase/word will be translate is: \n\n \"\"\" \n${request.text.content}\n\"\"\"`,
         }];
 
         const response = await openai.createChatCompletion({
