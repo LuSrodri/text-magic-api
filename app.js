@@ -89,7 +89,7 @@ app.post('/code', async (req, res) => {
         res.sendStatus(401);
         return;
     }
-    
+
     try {
         let request = req.body.request;
 
@@ -112,6 +112,47 @@ app.post('/code', async (req, res) => {
         {
             role: "user",
             content: `The language is: \n\n \"\"\" \n${request.language.content}\n\"\"\"`,
+        }];
+
+        const response = await openai.createChatCompletion({
+            model: "gpt-3.5-turbo-16k",
+            messages: chatConversation,
+            user: uuidv4(),
+        });
+
+        res.statusCode = 200;
+        res.send({ output: response.data.choices[0].message });
+    }
+    catch (e) {
+        console.log(e);
+        res.status(400).send({ error: "Some problem with the input. Try again with another input." });
+    }
+});
+
+app.post('/translator', async (req, res) => {
+    if (req.headers['x-rapidapi-proxy-secret'] !== process.env.X_RAPIDAPI_PROXY_SECRET) {
+        res.sendStatus(401);
+        return;
+    }
+
+    try {
+        let request = req.body.request;
+
+        if ((await openai.createModeration({ input: Object.values(request).map(x => x.content) })).data.results[0].flagged) {
+            throw new Error("Profene input.");
+        }
+
+        let chatConversation = [{
+            role: "system",
+            content: `You are a translator that helps with translates.`,
+        },
+        {
+            role: "user",
+            content: `The target language is: \n\n \"\"\" \n${request.language.content}\n\"\"\"`,
+        },
+        {
+            role: "user",
+            content: `The text to translate is: \n\n \"\"\" \n${request.text.content}\n\"\"\"`,
         }];
 
         const response = await openai.createChatCompletion({
