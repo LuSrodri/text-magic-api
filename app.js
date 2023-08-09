@@ -84,6 +84,40 @@ app.post('/chat', async (req, res) => {
     }
 });
 
+app.post('/chat4', async (req, res) => {
+    if (req.headers['x-rapidapi-proxy-secret'] !== process.env.X_RAPIDAPI_PROXY_SECRET) {
+        res.sendStatus(401);
+        return;
+    }
+
+    try {
+        let conversation = req.body.conversation;
+
+        if ((await openai.createModeration({ input: conversation.map(x => x.content) })).data.results[0].flagged) {
+            throw new Error("Profene input.");
+        }
+
+        let chatConversation = [{
+            role: "system",
+            content: `You are a assistent that helps with anything.`
+        }
+        ].concat(conversation);
+
+        const response = await openai.createChatCompletion({
+            model: "gpt-4",
+            messages: chatConversation,
+            user: uuidv4(),
+        });
+
+        res.statusCode = 200;
+        res.send({ output: response.data.choices[0].message });
+    }
+    catch (e) {
+        console.log(e);
+        res.status(400).send({ error: "Some problem with the input. Try again with another input." });
+    }
+});
+
 app.post('/code', async (req, res) => {
     if (req.headers['x-rapidapi-proxy-secret'] !== process.env.X_RAPIDAPI_PROXY_SECRET) {
         res.sendStatus(401);
