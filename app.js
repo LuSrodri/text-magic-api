@@ -17,7 +17,7 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 app.post('/text-to-emoji', async (req, res) => {
-    if (req.headers['x-rapidapi-proxy-secret'] !== process.env.X_RAPIDAPI_PROXY_SECRET) {
+    if (req.headers['x-rapidapi-proxy-secret'] !== process.env.X_RAPIDAPI_PROXY_SECRET_EMOJI) {
         res.sendStatus(401);
         return;
     }
