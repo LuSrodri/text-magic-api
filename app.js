@@ -30,7 +30,7 @@ app.post('/text-to-emoji', async (req, res) => {
         }
 
         const response = await openai.createChatCompletion({
-            model: "gpt-3.5-turbo",
+            model: "gpt-4-1106-preview",
             messages: [
                 { "role": "user", "content": ("Write the text below in emoji. \n\n Text: \"\"\" \n" + input + "\n\"\"\"") },
             ],
@@ -97,14 +97,10 @@ app.post('/chat4', async (req, res) => {
             throw new Error("Profene input.");
         }
 
-        let chatConversation = [{
-            role: "system",
-            content: `You are a assistent that helps with anything.`
-        }
-        ].concat(conversation);
+        let chatConversation = [].concat(conversation);
 
         const response = await openai.createChatCompletion({
-            model: "gpt-4",
+            model: "gpt-4-1106-preview",
             messages: chatConversation,
             user: uuidv4(),
         });
