@@ -17,7 +17,7 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 app.post('/text-to-emoji', async (req, res) => {
-    if (req.headers['x-rapidapi-proxy-secret'] !== process.env.X_RAPIDAPI_PROXY_SECRET_EMOJI) {
+    if (req.headers['x-rapidapi-proxy-secret'] !== process.env.X_RAPIDAPI_PROXY_SECRET) {
         res.sendStatus(401);
         return;
     }
@@ -30,7 +30,7 @@ app.post('/text-to-emoji', async (req, res) => {
         }
 
         const response = await openai.createChatCompletion({
-            model: "gpt-4-1106-preview",
+            model: "gpt-3.5-turbo-16k",
             messages: [
                 { "role": "user", "content": ("Write the text below in emoji. \n\n Text: \"\"\" \n" + input + "\n\"\"\"") },
             ],
@@ -71,36 +71,6 @@ app.post('/chat', async (req, res) => {
 
         const response = await openai.createChatCompletion({
             model: "gpt-3.5-turbo-16k",
-            messages: chatConversation,
-            user: uuidv4(),
-        });
-
-        res.statusCode = 200;
-        res.send({ output: response.data.choices[0].message });
-    }
-    catch (e) {
-        console.log(e);
-        res.status(400).send({ error: "Some problem with the input. Try again with another input." });
-    }
-});
-
-app.post('/chat4', async (req, res) => {
-    if (req.headers['x-rapidapi-proxy-secret'] !== process.env.X_RAPIDAPI_PROXY_SECRET) {
-        res.sendStatus(401);
-        return;
-    }
-
-    try {
-        let conversation = req.body.conversation;
-
-        if ((await openai.createModeration({ input: conversation.map(x => x.content) })).data.results[0].flagged) {
-            throw new Error("Profene input.");
-        }
-
-        let chatConversation = [].concat(conversation);
-
-        const response = await openai.createChatCompletion({
-            model: "gpt-4-1106-preview",
             messages: chatConversation,
             user: uuidv4(),
         });
