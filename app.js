@@ -225,6 +225,10 @@ app.post('/translator', async (req, res) => {
     }
 });
 
+app.get('/ping', (req, res) => {
+    res.send("pong");
+});
+
 app.listen(PORT, () => {
     console.log(`App listening on port ${PORT}!`);
 });
