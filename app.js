@@ -62,6 +62,8 @@ app.post('/math-assistant', async (req, res) => {
             thread.id
         )).data[0].content;
 
+        await openai.beta.assistants.del(assistant.id);
+
         res.statusCode = 200;
         res.send({ output: response[0].text });
     }
